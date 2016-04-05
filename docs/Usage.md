@@ -257,3 +257,6 @@ return $junty;
 ```bash
 $ vendor/bin/junty
 ```
+
+## Utils
+* [How to create a plugin?](https://github.com/the-junty/junty-docs/blob/master/docs/Plugins.md)

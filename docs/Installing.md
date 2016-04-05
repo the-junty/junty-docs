@@ -8,4 +8,4 @@ $ composer require --dev junty-junty
 ```
 
 ## Done!
-Now you can [start](https://github.com/the-junty/junty/blob/master/docs/Usage.md) with Junty!
+Now you can [start](https://github.com/the-junty/junty-docs/blob/master/docs/Usage.md) with Junty!
