@@ -13,6 +13,7 @@ Usage
 * [Stream handling methods](#stream-handling-methods)
   * [About ```Junty\Stream\Stream```](#about-juntystreamstream)
   * [```src```](#src)
+    * [Ignoring files](#ignoring-files)
   * [```forStreams```](#forstreams)
   * [```forStream```](#forStream)
   * [```push```](#push)
@@ -155,6 +156,22 @@ $this->src('*.php')
             echo $stream->getMetaData('uri');
         }
     });
+```
+
+#### Ignoring files
+
+It's possible files also passing a single pattern or an array of them. Howerver the pattern must be is a regular expression.
+
+```php
+$this->src('*.php', '/file_to_ignore.php/')
+    //...
+```
+
+or
+
+```php
+$this->src('*.php', ['/file_to_ignore.php/', '/ignore_too.php/'])
+    //...
 ```
 
 ### ```forStreams```
