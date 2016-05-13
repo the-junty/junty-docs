@@ -2,7 +2,7 @@ Usage
 =====
 
 ## Index
-* [Instance (creating ```juntyfile.php```)](#instance)
+* [Getting Start (creating ```juntyfile.php```)](#getting-start)
 * [Creating tasks and groups](#creating-tasks-and-groups)
   * [Tasks](#tasks)
     * [via ```function```](#via-function)
@@ -12,12 +12,13 @@ Usage
     * [via ```class```](#via-class-1)
 * [Stream handling methods](#stream-handling-methods)
   * [About ```Junty\Stream\Stream```](#about-juntystreamstream)
-  * [```src```](#src)
-    * [Ignoring files](#ignoring-files)
+  * [```end```](#end)
   * [```forStreams```](#forstreams)
   * [```forStream```](#forStream)
   * [```push```](#push)
-  * [```end```](#end)
+  * [```src```](#src)
+    * [Ignoring files](#ignoring-files)
+  * [```temp```](#temp)
   * [```toDir```](#todir)
   * [```Stream::setContents```](#streamsetcontents)
   * [```Stream::save```](#streamsave)
@@ -25,7 +26,7 @@ Usage
 * [Ordering tasks](#ordering-tasks)
 * [Running](#running)
 
-### Instance
+### Getting Start
 Create a file called ```juntyfile.php``` returning the ```Runner``` instance.
 ```php
 <?php
@@ -147,31 +148,18 @@ $junty->group(new class() extends Group
 ### About ```Junty\Stream\Stream```
 ```Junty\Stream\Stream``` implements the [PSR-7 Stream Interface (```Psr\Http\Message\StreamInterface```)](http://www.php-fig.org/psr/psr-7/#3-4-psr-http-message-streaminterface).
 
-### ```src```
-Provides streams by the pattern passed.
+### ```end```
+Empties list of streams.
 ```php
-$this->src('*.php')
+$this->src('*.txt')
     ->forStreams(function (array $streams) {
         foreach ($streams as $stream) {
-            echo $stream->getMetaData('uri');
+            echo $stream->getContents(); // 'hello' for each stream
         }
-    });
-```
-
-#### Ignoring files
-
-It's possible files also passing a single pattern or an array of them. Howerver the pattern must be is a regular expression.
-
-```php
-$this->src('*.php', '/file_to_ignore.php/')
-    //...
-```
-
-or
-
-```php
-$this->src('*.php', ['/file_to_ignore.php/', '/ignore_too.php/'])
-    //...
+    })
+    ->end();
+    ->src('*.php')
+        // ...
 ```
 
 ### ```forStreams```
@@ -212,22 +200,48 @@ $this->src('*.txt')
     });
 ```
 
-### ```end```
-Empties list of streams.
+### ```src```
+Provides streams by the pattern passed.
 ```php
-$this->src('*.txt')
+$this->src('*.php')
     ->forStreams(function (array $streams) {
         foreach ($streams as $stream) {
-            echo $stream->getContents(); // 'hello' for each stream
+            echo $stream->getMetaData('uri');
         }
-    })
-    ->end();
-    ->src('*.php')
-        // ...
+    });
+```
+
+#### Ignoring files
+
+It's possible ignore files also passing a single pattern or an array of them. Howerver the pattern must be a regular expression.
+
+```php
+$this->src('*.php', '/file_to_ignore.php/')
+    //...
+```
+
+or
+
+```php
+$this->src('*.php', ['/file_to_ignore.php/', '/ignore_too.php/'])
+    //...
+```
+
+### ```temp```
+Creates a temporary file, that will be deleted on [```end```](#end) execution.
+
+```php
+$this->forStreams(function (array $streams) {
+    // ...
+    $this->temp(new Stream(fopen('file.php', 'w+'))); 
+})->forStreams(function (array $streams) {
+    // 'file.php' will be included at streams list
+});
 ```
 
 ### ```toDir```
 Put all streammed files on a certain directory.
+
 ```php
 $this->src('*.php')
     ->forStreams($this->toDir('php_files')); // Copy all files to php_files
@@ -235,10 +249,11 @@ $this->src('*.php')
 
 ### ```Stream::setContents```
 Updates the contents of a stream.
+
 ```php
 ->forStream(function (Stream $stream) {
     $stream->setContents('Hello! ;)');
-}); // Copy all files to php_files
+});
 ```
 
 ### ```Stream::save```
